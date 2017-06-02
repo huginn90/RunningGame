@@ -1,8 +1,12 @@
 package com.iot.surfaceviewtest;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by hdj on 2017-05-30.
@@ -33,5 +37,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         gameThread.off();
+    }
+
+    public boolean onTouchEvent(MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+        Log.i(TAG, "x = " +x+ ", y =" +y);
+        return true;
     }
 }
