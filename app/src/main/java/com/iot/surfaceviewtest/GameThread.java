@@ -16,7 +16,6 @@ import java.util.Vector;
  */
 
 public class GameThread extends Thread {
-    private long setTime = 0;
 
     private Character character;
     private Vector<BackGround> bglist = new Vector<>();
@@ -61,6 +60,7 @@ public class GameThread extends Thread {
 
             Rect bgrect = bglist.get(i).getRect();
             if (bgrect.right < 0) {
+
                 // 앞쪽 배경 삭제. 뒤쪽 배경 추가.
                 bglist.removeElementAt(i);
                 BackGround newbg = new BackGround();
@@ -85,14 +85,12 @@ public class GameThread extends Thread {
             // 타일이 화면에 다 그려지면 다음 타일 생성.
             Rect lasttile = tilelist.lastElement().getRect();
             if (lasttile.right < rectFrame.right) {
-
                 Tile newtile = new Tile();
                 newtile.setImage(resource, R.drawable.block1);
                 int tileheight = rectFrame.height() - (rectFrame.height() / 5);
                 newtile.setPosition(rectFrame.right + (rectFrame.width() / 4), tileheight);
                 newtile.setSize(Random.get(rectFrame.width() / 10, rectFrame.width() / 4), rectFrame.height() / 20);
                 tilelist.add(newtile);
-
             }
         }
 
@@ -100,7 +98,9 @@ public class GameThread extends Thread {
         character.move(rectFrame);
         // 타일위가 아니면 밑으로 떨어짐.
         if(!character.isOverTile(tilelist)) {
-            character.setSpeed(0, 5);
+            if(!character.isJumpflag()) {
+                character.setSpeed(0, 5);
+            }
         }
         else
             character.setSpeed(0, 0);
@@ -142,6 +142,7 @@ public class GameThread extends Thread {
         // 캐릭터 추가.
         Bitmap bitmap = BitmapFactory.decodeResource(resource, R.drawable.runcharacter1);
         bitmap = removeColor(bitmap, Color.WHITE);
+        character.setRectFrame(rectFrame);
         int widthCharacter = width / 10;
         character.setImage(bitmap);
         character.setPosition(width / 5, tileheight - widthCharacter);

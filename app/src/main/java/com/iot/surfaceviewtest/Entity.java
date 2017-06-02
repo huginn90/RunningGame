@@ -88,13 +88,8 @@ class Entity {
     }
 
     public void move(Rect rectFrame) {
-//        if(!rectFrame.contains(getRect())) return;
-
         position.x+=speed.x;
         position.y+=speed.y;
-
-//        if(position.x <0 || position.x > rectFrame.right-size.x) speed.x*= -1;
-//        if(position.y <0 || position.y > rectFrame.bottom-size.y) speed.y*= -1;
     }
 
     public Rect getRect() {
