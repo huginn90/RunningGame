@@ -43,6 +43,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int x = (int) event.getX();
         int y = (int) event.getY();
         Log.i(TAG, "x = " +x+ ", y =" +y);
-        return true;
+        gameThread.gameTouched();
+        return super.onTouchEvent(event);
     }
 }

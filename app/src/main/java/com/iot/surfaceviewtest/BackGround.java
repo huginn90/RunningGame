@@ -8,5 +8,6 @@ public class BackGround extends Entity {
 
     public BackGround() {
         super(150);
+        setSpeed(-5, 0);
     }
 }
