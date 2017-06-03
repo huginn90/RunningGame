@@ -1,5 +1,7 @@
 package com.iot.surfaceviewtest;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +11,8 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 
 import java.util.Vector;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 
 /**
@@ -24,6 +28,7 @@ public class GameThread extends Thread {
     private SurfaceHolder surfaceHolder = null;
     private Rect rectFrame = new Rect();
     private Resources resource;
+    private Context context;
 
     public GameThread(SurfaceHolder surfaceHolder, Resources res) {
 
@@ -56,7 +61,7 @@ public class GameThread extends Thread {
 
         //배경 이동
         for (int i = 0; i < bglist.size(); i++) {
-            bglist.get(i).move(rectFrame);
+            bglist.get(i).move();
 
             Rect bgrect = bglist.get(i).getRect();
             if (bgrect.right < 0) {
@@ -79,42 +84,38 @@ public class GameThread extends Thread {
             if (tile.getRect().right < 0) {
                 tilelist.removeElementAt(0);
             }
-
-            tile.move(rectFrame);
-
+            tile.move();
             // 타일이 화면에 다 그려지면 다음 타일 생성.
             Rect lasttile = tilelist.lastElement().getRect();
             if (lasttile.right < rectFrame.right) {
                 Tile newtile = new Tile();
                 newtile.setImage(resource, R.drawable.block1);
                 int tileheight = rectFrame.height() - (rectFrame.height() / 5);
-                newtile.setPosition(rectFrame.right + (rectFrame.width() / 4), tileheight);
+                newtile.setPosition(rectFrame.right + (rectFrame.width() / 5), tileheight);
                 newtile.setSize(Random.get(rectFrame.width() / 10, rectFrame.width() / 4), rectFrame.height() / 20);
                 tilelist.add(newtile);
             }
         }
 
         // 캐릭터 이동
-        character.move(rectFrame);
-        // 타일위가 아니면 밑으로 떨어짐.
-        if(!character.isOverTile(tilelist)) {
-            if(!character.isJumpflag()) {
-                character.setSpeed(0, 5);
-            }
+        character.charactermove(tilelist, rectFrame);
+        // 캐릭터가 화면 밖으로 떨어지면 종료.
+        if (character.getRect().bottom > rectFrame.bottom) {
+            this.off();
+            Intent intent = new Intent(context, GameoverActivity.class);
+            startActivity(context, intent, null);
         }
-        else
-            character.setSpeed(0, 0);
 
     }
 
     private void draw(Canvas canvas) {
-        for(int i=0; i<bglist.size(); i++) {
+        for (int i = 0; i < bglist.size(); i++) {
             bglist.get(i).draw(canvas);
         }
 
         character.draw(canvas);
 
-        for (int i=0; i<tilelist.size(); i++) {
+        for (int i = 0; i < tilelist.size(); i++) {
             tilelist.get(i).draw(canvas);
         }
     }
@@ -142,14 +143,14 @@ public class GameThread extends Thread {
         // 캐릭터 추가.
         Bitmap bitmap = BitmapFactory.decodeResource(resource, R.drawable.runcharacter1);
         bitmap = removeColor(bitmap, Color.WHITE);
-        character.setRectFrame(rectFrame);
         int widthCharacter = width / 10;
         character.setImage(bitmap);
         character.setPosition(width / 5, tileheight - widthCharacter);
         character.setSize(widthCharacter, widthCharacter);
     }
 
-    public void on() {
+    public void on(Context context) {
+        this.context = context;
         this.start();
     }
 
@@ -174,7 +175,7 @@ public class GameThread extends Thread {
     }
 
     public void gameTouched() {
-        if(character.isOverTile(tilelist)) {
+        if (character.isOverTile(tilelist)) {
             character.jump();
         }
     }

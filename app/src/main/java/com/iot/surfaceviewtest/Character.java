@@ -10,7 +10,6 @@ import java.util.Vector;
  */
 
 public class Character extends Entity {
-    private Rect rectFrame = null;
 
     public void setJumpflag(boolean jumpflag) {
         this.jumpflag = jumpflag;
@@ -27,13 +26,11 @@ public class Character extends Entity {
         return jumpflag;
     }
 
-    public void setRectFrame(Rect rectFrame) {
-        this.rectFrame = rectFrame;
-    }
-
     public void jump() {
-        jumpflag = true;
-        setSpeed(0, -5);
+        if(!jumpflag) {
+            jumpflag = true;
+            setSpeed(0, -5);
+        }
     }
 
     public boolean isOverTile(Vector<Tile> tilelist) {
@@ -48,4 +45,24 @@ public class Character extends Entity {
         return false;
     }
 
+    public void charactermove(Vector<Tile> tilelist, Rect rectFrame) {
+        super.move();
+        if(this.isOverTile(tilelist)) {
+            if(!this.isJumpflag()) {
+                // 타일위이면서 점프중이 아니면 그대로 유지.
+                this.setSpeed(0, 0);
+            }
+        }
+        else {
+            Rect characterRect = this.getRect();
+            if(characterRect.top < rectFrame.height()/5) {
+                // 점프로 일정 높이에 도달했을때.
+                this.setJumpflag(false);
+            }
+            if(!this.isJumpflag()) {
+                // 타일위가 아니고, 점프중이 아니면 떨어짐.
+                this.setSpeed(0, 5);
+            }
+        }
+    }
 }

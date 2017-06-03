@@ -15,9 +15,11 @@ import static android.content.ContentValues.TAG;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     GameThread gameThread = null;
+    Context context;
 
     public GameView(Context context) {
         super(context);
+        this.context = context;
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
 
@@ -26,7 +28,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         gameThread = new GameThread(holder, getResources());
-        gameThread.on();
+        gameThread.on(context);
     }
 
     @Override

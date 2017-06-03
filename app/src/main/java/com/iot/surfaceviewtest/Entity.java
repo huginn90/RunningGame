@@ -87,7 +87,7 @@ class Entity {
         canvas.drawBitmap(image, rectSrc, rectDst, paint);
     }
 
-    public void move(Rect rectFrame) {
+    public void move() {
         position.x+=speed.x;
         position.y+=speed.y;
     }
